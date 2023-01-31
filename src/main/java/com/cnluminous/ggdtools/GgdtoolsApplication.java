@@ -8,7 +8,7 @@ public class GgdtoolsApplication {
 
     public static void main(String[] args) throws InterruptedException {
         SpringApplication.run(GgdtoolsApplication.class, args);
-        new AutoStart();
+        new AutoStart(args);
     }
 
 }

@@ -5,6 +5,7 @@ import com.jacob.com.Variant;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
@@ -12,20 +13,36 @@ public class AutoStart {
     static int width = 640;
     static int height = 480;
     static int startClickNum = 0;
-    static int gameStartNum = 0;
-    static int gameOverNum = 0;
-    static int time = 0;
-    static int gameStatus = 0;
-    public AutoStart() throws InterruptedException {
+    static String processId = null;
+    public AutoStart(String[] args) throws InterruptedException {
+        if(args.length==2){
+            if (args[0].equals("pid")){
+                processId = args[1];
+            }
+        }
         DmConfig config = new DmConfig();
-        String process_name = "Goose Goose Duck.exe";
-        int hwnd = Dispatch.call(config.getDm(), "FindWindowByProcess", process_name, "", "Goose Goose Duck").getInt();
-//        int hwnd = Dispatch.call(config.getDm(),"FindWindowByProcessId","13532","","").getInt();
+        String process_name = "Goose Goose Duck";
+//        int hwnd = Dispatch.call(config.getDm(), "FindWindowByProcess", process_name, "", "Goose Goose Duck").getInt();
+        if (processId==null){
+            Scanner scanner = new Scanner(System.in);
+            log.info("未在启动参数中找到PID,请输入游戏进程PID:");
+            processId = scanner.nextLine();
+        }
+        int hwnd = Dispatch.call(config.getDm(),"FindWindowByProcessId",processId,"",process_name).getInt();
         if (hwnd==0){
             log.error("未找到游戏窗口,绑定失败");
             System.exit(114514);
         }
-        log.info("正在绑定窗口：" + process_name +"("+hwnd+")"+"结果:"+Dispatch.call(config.getDm(), "BindWindowEx", hwnd, "dx.graphic.3d.10plus", "dx.mouse.position.lock.api", "windows","", 0));
+
+        int bindWindowResult = Dispatch.call(config.getDm(), "BindWindowEx", hwnd, "dx.graphic.3d.10plus", "dx.mouse.position.lock.api", "windows","", 0).getInt();
+        log.info("正在绑定窗口：" + process_name +"("+hwnd+")"+"结果:"+bindWindowResult);
+        if (bindWindowResult==0){
+            log.error("绑定窗口失败,错误代码:"+Dispatch.call(config.getDm(),"GetLastError"));
+            log.error("请联系开发者解决");
+            System.exit(114514);
+
+
+        }
         log.info("窗体设置成"+width+"*"+height+"结果:"+Dispatch.call(config.getDm(),"SetWindowSize",hwnd,width,height));
 //        String path = new File(GgdtoolsApplication.class.getClassLoader().getResource("").getPath()).getPath();
 //        log.info("设置路径:"+path+"结果:"+Dispatch.call(config.getDm(),"SetPath",path));
