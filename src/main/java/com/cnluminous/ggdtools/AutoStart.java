@@ -46,6 +46,7 @@ public class AutoStart {
         log.info("窗体设置成"+width+"*"+height+"结果:"+Dispatch.call(config.getDm(),"SetWindowSize",hwnd,width,height));
 //        String path = new File(GgdtoolsApplication.class.getClassLoader().getResource("").getPath()).getPath();
 //        log.info("设置路径:"+path+"结果:"+Dispatch.call(config.getDm(),"SetPath",path));
+//        log.info("锁定FPS20帧,结果:"+Dispatch.call(config.getDm(),"DownCpu",0,20));
         log.info("==========初始化完成,结束程序请直接关闭窗口==========");
         while (true){
 //            log.info("=====当前失败点击次数:"+q1+"成功开始次数:"+q2+"=====");
